@@ -1,0 +1,37 @@
+[project]
+name = "suds"
+authors = [
+        {name="Toshio Kuratomi", email="a.badger@gmail.com"}
+]
+
+description = "A sudoku solver"
+home-page = "https://github.com/abadger/suds"
+requires-python = "~=3.0"
+readme = "README.md"
+dependencies = []
+
+[project.urls]
+repository = "https://github.com/abadger/suds"
+documentation = "https://readthedocs.io/suds"
+
+[build-system]
+requires = ["mesonpep517"]
+build-backend = "mesonpep517.buildapi"
+
+[tool.mesonpep517.metadata]
+classifiers = [
+    "Intended Audience :: Developers",
+    "AGPL-3.0-or-later",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+meson-options = []
+meson-python-option-name = ""
+platforms = "any"
+summary = "A sudoku solver"
+
+[tool.mesonpep517.entry-points]
+console_scripts = [
+    'suds = suds.main:main',
+]
+

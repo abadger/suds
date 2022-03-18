@@ -1,0 +1,22 @@
+{
+  "template": "git@github.com:abadger/cookiecutter-python-projects",
+  "commit": "26c69fd9b072177ede62c6e02f37453b71002c16",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "codecov_badge_token": "GD9HJBEQSM",
+      "description": "A sudoku solver",
+      "email": "a.badger@gmail.com",
+      "full_name": "Toshio Kuratomi",
+      "github_username": "abadger",
+      "project_name": "Suds",
+      "project_slug": "suds",
+      "version": "0.0.1",
+      "year": "2022",
+      "open_source_license": "AGPL-3.0-or-later",
+      "has_entrypoint": "Yes, create entrypoint",
+      "_template": "git@github.com:abadger/cookiecutter-python-projects"
+    }
+  },
+  "directory": null
+}
