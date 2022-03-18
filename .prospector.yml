@@ -1,0 +1,35 @@
+inherits:
+  - "strictness_veryhigh"
+  - "member_warnings"
+  - "full_pep8"
+  - "doc_warnings"
+
+output-format: text
+max-line-length: 100
+test-warnings: false
+
+ignore-paths:
+  - docs
+  - tests
+
+ignore-patterns:
+  - (^|/)skip(this)?(/|$)
+
+pydocstyle:
+  disable:
+    - D212
+    - D203  # Blank line required before class docstring
+    - D202  # No blank line allowed after function docstring
+
+vulture:
+  run: true
+
+mypy:
+  run: true
+
+bandit:
+  run: true
+
+# We don't use setuptools
+pyroma:
+  run: false
