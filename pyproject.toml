@@ -32,6 +32,15 @@ summary = "A sudoku solver"
 
 [tool.mesonpep517.entry-points]
 console_scripts = [
-    'suds = suds.main:main',
+    'suds = suds.cli:main',
 ]
 
+[tool.yapf]
+based_on_style = "pep8"
+COALESCE_BRACKETS = true
+COLUMN_LIMIT = 100
+INDENT_CLOSING_BRACKETS = true
+JOIN_MULTIPLE_LINES = false
+SPLIT_BEFORE_ARITHMETIC_OPERATOR = true
+SPLIT_BEFORE_DOT = true
+SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN = true

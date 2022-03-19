@@ -1,0 +1,32 @@
+output-format: text
+max-line-length: 100
+
+inherits:
+  - "strictness_veryhigh"
+  - "test_warnings"
+  - "member_warnings"
+  - "full_pep8"
+  - "doc_warnings"
+
+ignore-paths:
+  - docs
+
+ignore-patterns:
+  - (^|/)skip(this)?(/|$)
+
+pydocstyle:
+  disable:
+    - D212
+
+vulture:
+  run: true
+
+mypy:
+  run: true
+
+bandit:
+  run: true
+
+# We don't use setuptools
+pyroma:
+  run: false

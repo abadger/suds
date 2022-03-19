@@ -30,10 +30,6 @@ repos:
     -   id: prospector
         additional_dependencies:
         - ".[with_mypy,with_bandit,with_vulture]"
-        args:
-        # Tune these later.  Perhaps with a prospector profile
-        - --strictness=veryhigh
-        - --doc-warnings
 -   repo: https://github.com/PyCQA/doc8
     rev: 0.10.1
     hooks:
