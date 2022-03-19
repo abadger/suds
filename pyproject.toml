@@ -15,7 +15,7 @@ repository = "https://github.com/abadger/suds"
 documentation = "https://readthedocs.io/suds"
 
 [build-system]
-requires = ["mesonpep517"]
+requires = ["mesonpep517", "ninja"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
