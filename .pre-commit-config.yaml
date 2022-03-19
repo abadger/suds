@@ -16,7 +16,7 @@ repos:
         additional_dependencies:
         - toml
 -   repo: https://github.com/PyCQA/prospector
-    rev: 1.8.0rc1
+    rev: 929e19c29234365d0d432732d6be5949ee7a233d
     hooks:
     # Includes:
     # pylint
