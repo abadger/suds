@@ -17,6 +17,8 @@ ignore-patterns:
 pydocstyle:
   disable:
     - D212
+    - D203  # Blank line required before class docstring
+    - D202  # No blank line allowed after function docstring
 
 vulture:
   run: true
