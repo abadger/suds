@@ -3,7 +3,7 @@
 # License: AGPL-3.0-or-later
 # See the LICENSE file for more details
 """The main entrypoint for suds."""
-from .cli import main
+from . import cli
 
 if __name__ == "__main__":
-    main()
+    cli.main()
