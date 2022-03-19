@@ -1,4 +1,4 @@
-from suds.main import main 
+from suds.main import main
 
 if __name__ == "__main__":
     main()

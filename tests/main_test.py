@@ -1,4 +1,5 @@
-from suds.main import main 
+from suds.main import main
 
-def test_main(): 
+
+def test_main():
     assert main() == 0
