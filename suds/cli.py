@@ -3,6 +3,7 @@
 # License: AGPL-3.0-or-later
 # See the LICENSE file for more details
 """CLI scripts for suds."""
+import copy
 import itertools
 import math
 import typing as t
@@ -35,7 +36,7 @@ class SudokuBoard:
     @property
     def columns(self):
         """Columns on the Sudoku Board."""
-        column_view = [[]] * self.num_columns
+        column_view = [[] for _c in range(0, self.num_columns)]
         for row in self._store:
             for column_idx, cell in enumerate(row):
                 column_view[column_idx].append(cell)
@@ -50,7 +51,7 @@ class SudokuBoard:
         Sudoku boards are divided into sub-squares which each must contain all of the sudoku
         numbers.  :attr:`boxes` holds a view of the data which reflects those sub-squares.
         """
-        box_view = [[]] * self.num_boxes
+        box_view = [[] for _c in range(0, self.num_boxes)]
         box_set = int(math.sqrt(self.num_boxes))
 
         for row_idx, row in enumerate(self._store):
@@ -63,29 +64,33 @@ class SudokuBoard:
 
     def valid(self) -> bool:
         """Validate the present state of the board."""
+        # A sudoku unit is a subset of the board that must contain one and only one of each number.
         for sudoku_unit in itertools.chain(self.rows, self.columns, self.boxes):
-            if len(set(sudoku_unit)) == len(sudoku_unit):
+            # Only check filled spaces on this unit of the board
+            sudoku_unit = [num for num in sudoku_unit if num]
+            if sudoku_unit and len(frozenset(sudoku_unit)) != len(sudoku_unit):
+                # Invalid if a number has repeated in this unit
                 return False
         return True
 
     def update(self, updates: t.Dict[t.Tuple[int, int], int]):
         """Update a board by filling in one or more squares."""
-        new_board = SudokuBoard(old_board=self)
+        old_store = copy.deepcopy(self._store)
 
         for element, value in updates.items():
-            new_board._store[element[0]][element[1]] = value  # pylint:disable=protected-access
+            self._store[element[0]][element[1]] = value
 
-        if new_board.valid():
-            self._store = new_board._store  # pylint:disable=protected-access
-        del new_board
+        if not self.valid():
+            self._store = old_store
+            raise Exception("The updates would make an invalid Sudoku")
 
 
 def main() -> int:
     """Run suds."""
-    print("Hello, world!")
     board = SudokuBoard()
+    print(board.rows)
     board.update({(0, 0): 1, (0, 1): 2})
     print(board.rows)
-    print(board.columns)
-    print(board.boxes)
+    board.update({(0, 2): 2})
+    print(board.rows)
     return 0
