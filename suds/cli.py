@@ -21,7 +21,7 @@ class SudokuBoard:
         self.num_boxes = 9
 
         if old_board:
-            self._store = old_board._store.copy()
+            self._store = copy.deepcopy(old_board._store)
         else:
             # Create the backing store
             self._store = []
