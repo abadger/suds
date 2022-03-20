@@ -91,6 +91,6 @@ def main() -> int:
     print(board.rows)
     board.update({(0, 0): 1, (0, 1): 2})
     print(board.rows)
-    board.update({(0, 2): 2})
-    print(board.rows)
+    # board.update({(0, 2): 2})
+    # print(board.rows)
     return 0
