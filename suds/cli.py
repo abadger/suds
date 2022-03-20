@@ -82,7 +82,7 @@ class SudokuBoard:
 
         if not self.valid():
             self._store = old_store
-            raise Exception("The updates would make an invalid Sudoku")
+            raise Exception('The updates would make an invalid Sudoku')
 
 
 def main() -> int:

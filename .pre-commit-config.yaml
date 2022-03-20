@@ -1,3 +1,4 @@
+---
 repos:
   - repo: https://github.com/pre-commit/mirrors-yapf
     rev: v0.32.0
@@ -32,7 +33,7 @@ repos:
       - id: detect-private-key
       - id: double-quote-string-fixer
       - id: end-of-file-fixer
-  #    - id: file-contents-sorter
+      # - id: file-contents-sorter
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: name-tests-test
@@ -70,10 +71,10 @@ repos:
     rev: v1.26.3
     hooks:
       - id: yamllint
-  - repo: https://github.com/thlorenz/doctoc
-    rev: v2.1.0
+  - repo: https://github.com/frnmst/md-toc
+    rev: 8.1.1
     hooks:
-      - id: doctoc
+      - id: md-toc
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.17.0
     hooks:
@@ -98,6 +99,7 @@ repos:
         args:
           - "--load-plugins=pylint.extensions.mccabe"
           - "--ignore-patterns=test_.*\\.py"
+          - "--disable=fixme"
   - repo: https://github.com/jendrikseipp/vulture
     rev: "v2.3"
     hooks:

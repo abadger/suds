@@ -1,6 +1,7 @@
+---
 name: pypi_upload
 
-on:
+"on":
   push:
     tags:
       - "*"
