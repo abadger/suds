@@ -29,7 +29,16 @@ repos:
     # vulture
     -   id: prospector
         additional_dependencies:
-        - ".[with_mypy,with_bandit,with_vulture]"
+        - ".[with_mypy,with_bandit]"
+        #- ".[with_mypy,with_bandit,with_vulture]"
+  # Prospector doesn't work right with vulture... Maybe it's only passing it
+  # a subset of the files?
+-   repo: https://github.com/jendrikseipp/vulture
+    rev: "v2.3"
+    hooks:
+      - id: vulture
+        args:
+        - "suds"
 -   repo: https://github.com/PyCQA/doc8
     rev: 0.10.1
     hooks:

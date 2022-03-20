@@ -44,3 +44,7 @@ JOIN_MULTIPLE_LINES = false
 SPLIT_BEFORE_ARITHMETIC_OPERATOR = true
 SPLIT_BEFORE_DOT = true
 SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN = true
+
+[tools.vulture]
+paths = ["suds"]
+verbose = true
