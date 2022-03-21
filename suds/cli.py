@@ -9,6 +9,10 @@ import math
 import typing as t
 
 
+class InvalidBoardPosition(Exception):
+    """The Sudoku Board would be invalid in this state."""
+
+
 class SudokuBoard:
     """Encapsulates a Board in the Sudoku game."""
 
@@ -82,7 +86,7 @@ class SudokuBoard:
 
         if not self.valid():
             self._store = old_store
-            raise Exception('The updates would make an invalid Sudoku')
+            raise InvalidBoardPosition('The updates would make an invalid Sudoku')
 
 
 def main() -> int:
