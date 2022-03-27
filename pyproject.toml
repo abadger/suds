@@ -15,7 +15,8 @@ repository = "https://github.com/abadger/suds"
 documentation = "https://readthedocs.io/suds"
 
 [build-system]
-requires = ["mesonpep517", "ninja"]
+# meson dep explicitly added due to https://github.com/mesonbuild/meson/issues/10181
+requires = ["meson!=0.62.0", "mesonpep517"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
