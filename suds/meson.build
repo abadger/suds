@@ -1,5 +1,7 @@
+src = ['__init__.py', '__main__.py', 'cli.py']
+
 python.install_sources(
-  '__init__.py', '__main__.py', 'cli.py',
+  src,
   pure: true,
-  subdir: 'suds'
+  subdir: 'suds',
 )

@@ -16,7 +16,7 @@ documentation = "https://readthedocs.io/suds"
 
 [build-system]
 # meson dep explicitly added due to https://github.com/mesonbuild/meson/issues/10181
-requires = ["meson!=0.62.0", "mesonpep517"]
+requires = ["meson[ninja]!=0.62.0", "mesonpep517"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
