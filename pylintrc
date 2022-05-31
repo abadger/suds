@@ -1,6 +1,7 @@
 [MASTER]
 ignore=.git
 jobs=0
+extension-pkg-allow-list=pydantic
 
 [BASIC]
 good-names=f,
@@ -9,6 +10,3 @@ good-names=f,
 [LOGGING]
 logging-format-style=new
 logging-modules=twiggy
-
-[MESSAGES CONTROL]
-extension-pkg-whitelist = "pydantic"

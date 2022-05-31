@@ -31,6 +31,42 @@ class SudokuBoard:
             for _count in range(0, self.num_rows):
                 self._store.append([None] * self.num_columns)
 
+    @classmethod
+    def from_list_of_rows(cls, rows: t.Sequence[t.Sequence[int]]) -> 'SudokuBoard':
+        """
+        Alternate constructor that reads from a list of rows.
+
+        The list of rows looks like this:
+
+        * A nine element Sequence.
+        * Each element is a Sequence of nine ints.
+        * Each int must be from 0 to 9 inclusive.
+        * 0 represents  blank cell.
+        * Example:
+            (
+                (0, 0, 7, 0, 0, 0, 0, 0, 6),
+                (0, 6, 0, 8, 0, 0, 2, 0, 5),
+                (0, 0, 8, 0, 6, 9, 3, 0, 0),
+                (7, 0, 6, 0, 3, 8, 1, 0, 0),
+                (4, 8, 9, 0, 1, 0, 7, 6, 3),
+                (0, 0, 3, 9, 7, 0, 5, 0, 8),
+                (0, 0, 5, 6, 8, 0, 4, 0, 0),
+                (8, 0, 4, 0, 0, 7, 0, 5, 0),
+                (6, 0, 0, 0, 0, 0, 9, 0, 0),
+            )
+        """
+        new_board = cls()
+
+        initial_data = {}
+        for ridx, row in enumerate(rows):
+            for cidx, cell in enumerate(row):
+                if cell:
+                    initial_data[(ridx, cidx)] = cell
+
+        new_board.update(initial_data)
+
+        return new_board
+
     @property
     def rows(self):
         """Rows on the Sudoku Board."""

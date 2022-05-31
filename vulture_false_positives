@@ -1,0 +1,5 @@
+extra  # unused variable (/home/badger/programming/playrepo/suds2/suds/savefile.py:14)
+Config  # unused variable (/home/badger/programming/playrepo/suds2/suds/savefile.py:19)
+rows  # unused variable (/home/badger/programming/playrepo/suds2/suds/savefile.py:25)
+board  # unused variable (/home/badger/programming/playrepo/suds2/suds/savefile.py:36)
+load_save_file  # unused function (/home/badger/programming/playrepo/suds2/suds/savefile.py:42)
