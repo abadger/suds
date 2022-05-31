@@ -38,7 +38,7 @@ ONE_EACH_BOARD_BOXES_DATA[3][1] = 4
 ONE_EACH_BOARD_BOXES_DATA[4][4] = 5
 ONE_EACH_BOARD_BOXES_DATA[5][7] = 6
 ONE_EACH_BOARD_BOXES_DATA[6][2] = 7
-ONE_EACH_BOARD_BOXES_DATA[7][4] = 8
+ONE_EACH_BOARD_BOXES_DATA[7][5] = 8
 ONE_EACH_BOARD_BOXES_DATA[8][8] = 9
 
 
@@ -87,15 +87,15 @@ class TestSudokuBoardViews:
 
     @pytest.mark.sudoku_data(ONE_EACH_BOARD_ROWS_DATA)
     def test_rows(self, sboard):
-        sboard.rows == _list_to_tuple(ONE_EACH_BOARD_ROWS_DATA)
+        assert sboard.rows == _list_to_tuple(ONE_EACH_BOARD_ROWS_DATA)
 
     @pytest.mark.sudoku_data(ONE_EACH_BOARD_ROWS_DATA)
     def test_columns(self, sboard):
-        sboard.columns == _list_to_tuple(ONE_EACH_BOARD_COLUMNS_DATA)
+        assert sboard.columns == _list_to_tuple(ONE_EACH_BOARD_COLUMNS_DATA)
 
     @pytest.mark.sudoku_data(ONE_EACH_BOARD_ROWS_DATA)
     def test_boxes(self, sboard):
-        sboard.boxes == _list_to_tuple(ONE_EACH_BOARD_BOXES_DATA)
+        assert sboard.boxes == _list_to_tuple(ONE_EACH_BOARD_BOXES_DATA)
 
 
 class TestSudokuBoardUpdate:
