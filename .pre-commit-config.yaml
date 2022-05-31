@@ -46,6 +46,9 @@ repos:
       - id: pytype
         additional_dependencies:
           - pydantic
+          - pytest
+        args:
+          - suds
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: "v1.9.0"
     hooks:
