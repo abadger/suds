@@ -94,6 +94,7 @@ repos:
         additional_dependencies:
           - mccabe
           - pylint-mccabe
+          - pydantic
         args:
           - "--load-plugins=pylint.extensions.mccabe"
           - "--ignore-patterns=test_.*\\.py"
@@ -104,6 +105,7 @@ repos:
       - id: vulture
         args:
           - "suds"
+          - "vulture_false_positives"
   - repo: https://github.com/PyCQA/pydocstyle
     rev: 6.1.1
     hooks:

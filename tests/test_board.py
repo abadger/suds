@@ -81,6 +81,27 @@ class TestSudokuBoardInit:
         assert new_board._store[0] is not initial_board._store[0]
         assert new_board._store == initial_board._store
 
+    def test_create_from_list_of_rows(self):
+        good_data = [
+            [0, 0, 7, 0, 0, 0, 0, 0, 6],
+            [0, 6, 0, 8, 0, 0, 2, 0, 5],
+            [0, 0, 8, 0, 6, 9, 3, 0, 0],
+            [7, 0, 6, 0, 3, 8, 1, 0, 0],
+            [4, 8, 9, 0, 1, 0, 7, 6, 3],
+            [0, 0, 3, 9, 7, 0, 5, 0, 8],
+            [0, 0, 5, 6, 8, 0, 4, 0, 0],
+            [8, 0, 4, 0, 0, 7, 0, 5, 0],
+            [6, 0, 0, 0, 0, 0, 9, 0, 0],
+        ]
+
+        new_board = board.SudokuBoard.from_list_of_rows(good_data)
+
+        internal_representation = []
+        for row in good_data:
+            internal_representation.append(tuple(c or None for c in row))
+
+        assert new_board.rows == _list_to_tuple(internal_representation)
+
 
 class TestSudokuBoardViews:
     """Test the SudokuBoard properties that return different views of the data."""

@@ -1,4 +1,4 @@
-src = ['__init__.py', '__main__.py', 'board.py', 'cli.py']
+src = ['__init__.py', '__main__.py', 'board.py', 'cli.py', 'savefile.py',]
 
 python.install_sources(
   src,
