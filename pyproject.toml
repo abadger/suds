@@ -21,7 +21,7 @@ documentation = "https://readthedocs.io/suds"
 # mesonpep517 from a checkout because 0.2.0 does not understand dependencies
 # Use my own fork of mesonpep517 because mesonpep517 uses meson to build so it
 # needs to have ninja added to its deps.
-requires = ["mesonpep517 @ git+https://gitlab.com/a.badger/mesonpep517@deps-fix", "meson[ninja]!==0.62.0.*"]
+requires = ["mesonpep517 @ git+https://gitlab.com/a.badger/mesonpep517@abadger-fork", "meson[ninja]!==0.62.0.*"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
