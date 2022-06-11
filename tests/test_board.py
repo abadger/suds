@@ -1,9 +1,18 @@
 import copy
+import itertools
+from collections.abc import Iterable
 
 import pytest
 
 from . import testdata
-from suds import board as board
+from suds import board
+
+INVALID_CELL_VALUES = (
+    10,
+    0,
+    -1,
+    (1, 3, 8, 0),
+)
 
 
 def _list_to_tuple(list_instance):
@@ -26,6 +35,161 @@ def sboard(request):
         new_board._store = copy.deepcopy(sudoku_data_marker.args[0])
         return new_board
     return board.SudokuBoard()
+
+
+class TestVerifySudokuValues:
+
+    @pytest.mark.parametrize('values', (
+        (1, 2),
+        {1, 2},
+        [1, 2],
+        range(1, 10),
+    ))
+    def test_good_sudoku_values(self, values):
+        assert board._verify_sudoku_values(values)
+
+    @pytest.mark.parametrize('values',
+                             itertools.chain(
+                                 ({v} for v in INVALID_CELL_VALUES if isinstance(v, Iterable)),
+                                 (v for v in INVALID_CELL_VALUES if not isinstance(v, Iterable)),
+                             ))
+    def test_bad_sudoku_values(self, values):
+        assert board._verify_sudoku_values((values, )) is False
+
+
+class TestSudokuCellCreation:
+    """Test SudokuCell."""
+
+    def test_create_cell_defaults(self):
+        cell = board.SudokuCell()
+
+        assert cell.value is None
+        assert cell.potential_values == frozenset((1, 2, 3, 4, 5, 6, 7, 8, 9))
+        assert not cell.solved
+
+    def test_create_cell_given_values(self):
+        cell = board.SudokuCell(potential_values=(1, 3, 5, 8))
+
+        assert cell.value is None
+        assert cell.potential_values == frozenset((1, 3, 5, 8))
+        assert not cell.solved
+
+    def test_create_cell_given_one_value(self):
+        cell = board.SudokuCell(potential_values=7)
+
+        assert cell.value == 7
+        assert cell.potential_values == frozenset((7, ))
+        assert cell.solved
+
+    @pytest.mark.parametrize('value', INVALID_CELL_VALUES)
+    def test_create_cell_invalid(self, value):
+        with pytest.raises(
+                ValueError, match='Potential values must all be from this'
+                ' set of numbers:.*'):
+            board.SudokuCell(potential_values=value)
+
+
+class TestSudokuCellMethods:
+
+    @pytest.mark.parametrize('potential_values, representation', (
+        (None, '{1, 2, 3, 4, 5, 6, 7, 8, 9}'),
+        (1, '1'),
+        ((1, 2), '{1, 2}'),
+    ))
+    def test_repr(self, potential_values, representation):
+        cell = board.SudokuCell(potential_values=potential_values)
+        assert repr(cell) == representation
+
+    def test_not_solved(self):
+        cell = board.SudokuCell(potential_values=(7, 8, 9))
+
+        assert not cell.solved
+
+    def test_solved(self):
+        cell = board.SudokuCell(potential_values=(7, ))
+
+        assert cell.solved
+
+    def test_get_value_not_yet_solved(self):
+        cell = board.SudokuCell(potential_values=(3, 5, 7))
+
+        assert cell.value is None
+
+    def test_get_value_solved(self):
+        cell = board.SudokuCell(potential_values=(3, ))
+
+        assert cell.value == 3
+
+    def test_set_value(self):
+        cell = board.SudokuCell()
+        assert cell.value is None
+
+        cell.value = 8
+
+        assert cell.value == 8
+        assert cell.solved
+        assert cell.potential_values == frozenset((8, ))
+
+    @pytest.mark.parametrize('value', (v for v in INVALID_CELL_VALUES if isinstance(v, int)))
+    def test_set_value_invalid(self, value):
+        cell = board.SudokuCell()
+
+        with pytest.raises(ValueError, match='Cell values must be from this set of numbers: .*'):
+            cell.value = value
+
+    def test_set_value_eliminated(self):
+        cell = board.SudokuCell(potential_values=(1, 2, 3))
+
+        with pytest.raises(
+                ValueError, match='Attempt to set cell to a value that'
+                ' has been eliminated.'):
+            cell.value = 4
+
+    def test_get_potential_values(self):
+        cell = board.SudokuCell(potential_values=(5, 2))
+
+        assert cell.potential_values == frozenset((5, 2))
+
+    @pytest.mark.parametrize('initial, removed, expected', (
+        (range(1, 10), (1, 3, 5, 7, 9), frozenset((2, 4, 6, 8))),
+        ((1, 3, 5), 7, frozenset((1, 3, 5))),
+        ((1, 3, 5), 3, frozenset((1, 5))),
+        ((1, 3, 5), (7, 9), frozenset((1, 3, 5))),
+        ((1, 3, 5), (1, 7, 9), frozenset((3, 5))),
+    ))
+    def test_isub(self, initial, removed, expected):
+        cell = board.SudokuCell(potential_values=initial)
+
+        cell -= removed
+
+        assert cell.potential_values == expected
+
+    def test_isub_eliminates_all(self):
+        cell = board.SudokuCell(potential_values=3)
+
+        with pytest.raises(
+                ValueError, match='Removing 3 would leave the cell with'
+                ' no solutions'):
+            cell -= 3
+
+    @pytest.mark.parametrize('cell, other', (
+        (board.SudokuCell(), board.SudokuCell()),
+        (board.SudokuCell(potential_values=3), board.SudokuCell(potential_values=3)),
+        (board.SudokuCell(potential_values=(4, 3)), board.SudokuCell(potential_values=(3, 4))),
+    ))
+    def test_eq_equal(self, cell, other):
+        assert cell == other
+
+    @pytest.mark.parametrize('cell, other', (
+        (board.SudokuCell(potential_values=3), board.SudokuCell(potential_values=4)),
+        (board.SudokuCell(potential_values=3), board.SudokuCell(potential_values=(3, 4))),
+        (board.SudokuCell(potential_values=(1, 2)), board.SudokuCell(potential_values=(3, 4))),
+        (board.SudokuCell(potential_values=3), 3),
+        (board.SudokuCell(potential_values=(3, 4)), 3),
+        (board.SudokuCell(potential_values=(3, 4)), board.SudokuCell()),
+    ))
+    def test_eq_not_equal(self, cell, other):
+        assert cell != other
 
 
 class TestSudokuBoardInit:
