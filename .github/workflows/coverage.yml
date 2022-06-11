@@ -23,8 +23,6 @@ jobs:
         platform:
           - {name: Linux, distro: ubuntu-latest, pip_cache_path: ~/.cache/pip}
         python:
-          - {version: 3.7, tox: py37}
-          - {version: 3.8, tox: py38}
           - {version: 3.9, tox: py39}
           - {version: "3.10", tox: py310}
 

@@ -6,7 +6,7 @@ authors = [
 
 description = "A sudoku solver"
 home-page = "https://github.com/abadger/suds"
-requires-python = "~=3.0"
+requires-python = ">=3.9"
 readme = "README.md"
 dependencies = [
     "pydantic",
