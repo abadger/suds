@@ -7,16 +7,109 @@ import copy
 import itertools
 import math
 import typing as t
+from collections.abc import Iterable
+from collections.abc import Sequence
 
 
 class InvalidBoardPosition(Exception):
     """The Sudoku Board would be invalid in this state."""
 
 
+LEGAL_VALUES = frozenset(range(1, 10))
+
+
+def _verify_sudoku_values(values: Iterable[int]):
+    # Filter out legal values.  If anything remains, it is an invalid value so return False
+    for _dummy in (v for v in values if v not in LEGAL_VALUES):
+        return False
+    return True
+
+
+class SudokuCell:
+    """Information that defines a generic cell in the SudokuBoard."""
+
+    def __init__(self, potential_values: t.Union[Iterable[int], int, None] = None):
+        if potential_values is None:
+            potential_values = range(1, 10)  # 1-9
+        elif not isinstance(potential_values, Iterable):
+            potential_values = {potential_values}
+
+        # Note: Change to set before validation in case we are passed an iterator
+        potential_values = frozenset(potential_values)
+        if not _verify_sudoku_values(potential_values):
+            raise ValueError('Potential values must all be from this set of numbers:'
+                             f' {", ".join(str(v) for v in LEGAL_VALUES)},'
+                             f' not {potential_values}')
+
+        self._potential_values: frozenset[int] = potential_values
+
+    def __repr__(self):
+        return str(self.value) if self.value else repr(set(self._potential_values))
+
+    @property
+    def solved(self) -> bool:
+        """If all but one value have been eliminated, then this is True."""
+        if len(self.potential_values) != 1:
+            return False
+        return True
+
+    @property
+    def value(self) -> t.Union[int, None]:
+        """Value of the cell or None if there is more than one possible value."""
+        if len(self._potential_values) == 1:
+            return next(iter(self._potential_values))
+        return None
+
+    @value.setter
+    def value(self, value: int):
+        """Set the value to a single number."""
+        new_value: frozenset[int] = frozenset((value, ))
+        if not _verify_sudoku_values(new_value):
+            raise ValueError('Cell values must be from this set of numbers:'
+                             f' {", ".join(str(v) for v in LEGAL_VALUES)},'
+                             f' not {value}')
+
+        if value not in self.potential_values:
+            raise ValueError('Attempt to set cell to a value that has been eliminated.')
+
+        self._potential_values = new_value
+
+    @property
+    def potential_values(self):
+        """Cell values that will not cause an immediate violation of the sudoku rules."""
+        return self._potential_values
+
+    def __isub__(self, other: t.Union[Iterable[int], int]):
+        """
+        Remove one or more potential values that the cell could be.
+
+        :arg other: An int between 1 and 9 or an iterable of ints between 1 and 9 which
+            are values that the cell cannot be.
+        """
+        if not isinstance(other, Iterable):
+            other = frozenset((other, ))
+
+        new_potential_values = self.potential_values.difference(other)
+        if not new_potential_values:
+            raise ValueError(f'Removing {", ".join(str(elem) for elem in other)}'
+                             ' would leave the cell with no solutions')
+
+        self._potential_values = new_potential_values
+
+        return self
+
+    def __eq__(self, other):
+        """Test for equality with other SudokuCells."""
+        if not isinstance(other, SudokuCell):
+            return super().__eq__(other)
+
+        return self.potential_values == other.potential_values
+
+
 class SudokuBoard:
     """Encapsulates a Board in the Sudoku game."""
 
-    def __init__(self, old_board=None):
+    def __init__(self, old_board: 'SudokuBoard' = None):
         """Create a Sudoku Board."""
         # FIXME: Seems like some of these should be computed from others
         self.num_rows = 9
@@ -32,7 +125,7 @@ class SudokuBoard:
                 self._store.append([None] * self.num_columns)
 
     @classmethod
-    def from_list_of_rows(cls, rows: t.Sequence[t.Sequence[int]]) -> 'SudokuBoard':
+    def from_list_of_rows(cls, rows: Sequence[Sequence[int]]) -> 'SudokuBoard':
         """
         Alternate constructor that reads from a list of rows.
 
@@ -112,7 +205,7 @@ class SudokuBoard:
                 return False
         return True
 
-    def update(self, updates: t.Dict[t.Tuple[int, int], int]):
+    def update(self, updates: dict[tuple[int, int], int]):
         """Update a board by filling in one or more squares."""
         old_store = copy.deepcopy(self._store)
 
