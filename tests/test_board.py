@@ -105,16 +105,6 @@ class TestSudokuCellMethods:
         cell = board.SudokuCell(potential_values=potential_values)
         assert repr(cell) == representation
 
-    def test_get_value_not_yet_solved(self):
-        cell = board.SudokuCell(potential_values=(3, 5, 7))
-
-        assert cell.value is None
-
-    def test_get_value_solved(self):
-        cell = board.SudokuCell(potential_values=(3, ))
-
-        assert cell.value == 3
-
     def test_set_value(self):
         cell = board.SudokuCell()
         assert cell.value is None
