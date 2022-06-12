@@ -104,7 +104,7 @@ repos:
           - pydantic
         args:
           - "--load-plugins=pylint.extensions.mccabe"
-          - "--ignore-patterns=test_.*\\.py"
+          - "--ignore-patterns=test_.*\\.py,conftest.py"
           - "--disable=fixme"
   - repo: https://github.com/jendrikseipp/vulture
     rev: "v2.4"
