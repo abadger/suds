@@ -1,5 +1,5 @@
-import copy
 import itertools
+import re
 from collections.abc import Iterable
 
 import pytest
@@ -27,14 +27,40 @@ def _list_to_tuple(list_instance):
     return tuple(accumulator)
 
 
+def _values_to_cells(values):
+    """Take an iterator of 9 ints and return a list of SudokuCells with those as the values."""
+    for row in values:
+        yield [
+            board.SudokuCell(potential_values=elem) if elem else board.SudokuCell() for elem in row
+        ]
+
+
+def input_format_to_view_format(values):
+    """Take an iterator of 9 ints and return the format that a view of a SudokuBoard would use."""
+    return _list_to_tuple(_values_to_cells(values))
+
+
 @pytest.fixture
 def sboard(request):
+    new_board = board.SudokuBoard()
     sudoku_data_marker = request.node.get_closest_marker('sudoku_data')
-    if sudoku_data_marker:
-        new_board = board.SudokuBoard()
-        new_board._store = copy.deepcopy(sudoku_data_marker.args[0])
+
+    if not sudoku_data_marker:
         return new_board
-    return board.SudokuBoard()
+
+    board_update_format = {}
+    for row_idx, row in enumerate(sudoku_data_marker.args[0]):
+        for col_idx, cell_value in enumerate(row):
+            if cell_value:
+                board_update_format[(row_idx, col_idx)] = cell_value
+
+    new_board.update(board_update_format)
+    return new_board
+
+
+#
+# SudokuCell tests
+#
 
 
 class TestVerifySudokuValues:
@@ -192,6 +218,11 @@ class TestSudokuCellMethods:
         assert cell != other
 
 
+#
+# SudokuBoard tests
+#
+
+
 class TestSudokuBoardInit:
     """Tests for SudokuBoard creation."""
 
@@ -199,14 +230,19 @@ class TestSudokuBoardInit:
         new_board = board.SudokuBoard()
 
         # Tuple of tuples of None.  9 rows and 9 columns
-        assert new_board.rows == _list_to_tuple(testdata.BLANK_BOARD_DATA)
+        assert new_board.rows == input_format_to_view_format(testdata.BLANK_BOARD_DATA)
 
     def test_create_from_old_board(self):
         initial_board = board.SudokuBoard()
         new_board = board.SudokuBoard(initial_board)
+
+        # Check that we have a copy, not the same storage and cells
         assert new_board is not initial_board
         assert new_board._store is not initial_board._store
         assert new_board._store[0] is not initial_board._store[0]
+        assert new_board._store[0][0] is not initial_board._store[0][0]
+
+        # Check that the values are the same
         assert new_board._store == initial_board._store
 
     def test_create_from_list_of_rows(self):
@@ -216,7 +252,7 @@ class TestSudokuBoardInit:
         for row in testdata.GOOD_DATA['board']['rows']:
             internal_representation.append(tuple(c or None for c in row))
 
-        assert new_board.rows == _list_to_tuple(internal_representation)
+        assert new_board.rows == input_format_to_view_format(internal_representation)
 
 
 class TestSudokuBoardViews:
@@ -224,36 +260,46 @@ class TestSudokuBoardViews:
 
     @pytest.mark.sudoku_data(testdata.ONE_EACH_BOARD_ROWS_DATA)
     def test_rows(self, sboard):
-        assert sboard.rows == _list_to_tuple(testdata.ONE_EACH_BOARD_ROWS_DATA)
+        assert sboard.rows == input_format_to_view_format(testdata.ONE_EACH_BOARD_ROWS_DATA)
 
     @pytest.mark.sudoku_data(testdata.ONE_EACH_BOARD_ROWS_DATA)
     def test_columns(self, sboard):
-        assert sboard.columns == _list_to_tuple(testdata.ONE_EACH_BOARD_COLUMNS_DATA)
+        assert sboard.columns == input_format_to_view_format(testdata.ONE_EACH_BOARD_COLUMNS_DATA)
 
     @pytest.mark.sudoku_data(testdata.ONE_EACH_BOARD_ROWS_DATA)
     def test_boxes(self, sboard):
-        assert sboard.boxes == _list_to_tuple(testdata.ONE_EACH_BOARD_BOXES_DATA)
+        assert sboard.boxes == input_format_to_view_format(testdata.ONE_EACH_BOARD_BOXES_DATA)
 
 
 class TestSudokuBoardUpdate:
 
     def test_update_serially_success(self, sboard):
         for row_idx, row in enumerate(testdata.ONE_EACH_BOARD_ROWS_DATA):
-            for column_idx, cell in ((i, c) for (i, c) in enumerate(row) if c is not None):
+            for column_idx, cell in ((i, c) for (i, c) in enumerate(row) if c):
                 sboard.update({(row_idx, column_idx): cell})
 
-        assert sboard.rows == _list_to_tuple(testdata.ONE_EACH_BOARD_ROWS_DATA)
+        assert sboard.rows == input_format_to_view_format(testdata.ONE_EACH_BOARD_ROWS_DATA)
 
     def test_update_batched_success(self, sboard):
         board_data = {}
         for row_idx, row in enumerate(testdata.ONE_EACH_BOARD_ROWS_DATA):
-            for column_idx, cell in ((i, c) for (i, c) in enumerate(row) if c is not None):
+            for column_idx, cell in ((i, c) for (i, c) in enumerate(row) if c):
                 board_data[(row_idx, column_idx)] = cell
+
         sboard.update(board_data)
 
-        assert sboard.rows == _list_to_tuple(testdata.ONE_EACH_BOARD_ROWS_DATA)
+        assert sboard.rows == input_format_to_view_format(testdata.ONE_EACH_BOARD_ROWS_DATA)
 
     @pytest.mark.sudoku_data(testdata.ONE_EACH_BOARD_ROWS_DATA)
     def test_update_failure(self, sboard):
-        with pytest.raises(board.InvalidBoardPosition):
+        with pytest.raises(
+                board.InvalidBoardPosition, match='The updates would make an invalid Sudoku'):
             sboard.update({(0, 1): 1})
+
+    def test_update_known_constraints(self, sboard):
+        sboard._store[0][1] -= 3
+        with pytest.raises(
+                board.InvalidBoardPosition,
+                match=re.escape('The update would violate the known constraints of cell (0, 1):'
+                                ' Attempt to set cell to a value that has been eliminated.')):
+            sboard.update({(0, 1): 3})

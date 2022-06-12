@@ -112,17 +112,17 @@ class SudokuBoard:
     def __init__(self, old_board: 'SudokuBoard' = None):
         """Create a Sudoku Board."""
         # FIXME: Seems like some of these should be computed from others
-        self.num_rows = 9
-        self.num_columns = 9
-        self.num_boxes = 9
+        self.num_rows: int = 9
+        self.num_columns: int = 9
+        self.num_boxes: int = 9
 
         if old_board:
-            self._store = copy.deepcopy(old_board._store)
+            self._store: list[list[SudokuCell]] = copy.deepcopy(old_board._store)
         else:
             # Create the backing store
-            self._store = []
+            self._store: list[list[SudokuCell]] = []
             for _count in range(0, self.num_rows):
-                self._store.append([None] * self.num_columns)
+                self._store.append([SudokuCell() for _dummy in range(0, self.num_columns)])
 
     @classmethod
     def from_list_of_rows(cls, rows: Sequence[Sequence[int]]) -> 'SudokuBoard':
@@ -199,7 +199,7 @@ class SudokuBoard:
         # A sudoku unit is a subset of the board that must contain one and only one of each number.
         for sudoku_unit in itertools.chain(self.rows, self.columns, self.boxes):
             # Only check filled spaces on this unit of the board
-            sudoku_unit = [num for num in sudoku_unit if num]
+            sudoku_unit = [cell.value for cell in sudoku_unit if cell.value]
             if sudoku_unit and len(frozenset(sudoku_unit)) != len(sudoku_unit):
                 # Invalid if a number has repeated in this unit
                 return False
@@ -210,7 +210,11 @@ class SudokuBoard:
         old_store = copy.deepcopy(self._store)
 
         for element, value in updates.items():
-            self._store[element[0]][element[1]] = value
+            try:
+                self._store[element[0]][element[1]].value = value
+            except ValueError as e:
+                raise InvalidBoardPosition('The update would violate the known'
+                                           f' constraints of cell {element}: {e}') from e
 
         if not self.valid():
             self._store = old_store
