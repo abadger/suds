@@ -47,13 +47,6 @@ class SudokuCell:
         return str(self.value) if self.value else repr(set(self._potential_values))
 
     @property
-    def solved(self) -> bool:
-        """If all but one value have been eliminated, then this is True."""
-        if len(self.potential_values) != 1:
-            return False
-        return True
-
-    @property
     def value(self) -> t.Union[int, None]:
         """Value of the cell or None if there is more than one possible value."""
         if len(self._potential_values) == 1:

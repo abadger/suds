@@ -91,21 +91,18 @@ class TestSudokuCellCreation:
 
         assert cell.value is None
         assert cell.potential_values == frozenset((1, 2, 3, 4, 5, 6, 7, 8, 9))
-        assert not cell.solved
 
     def test_create_cell_given_values(self):
         cell = board.SudokuCell(potential_values=(1, 3, 5, 8))
 
         assert cell.value is None
         assert cell.potential_values == frozenset((1, 3, 5, 8))
-        assert not cell.solved
 
     def test_create_cell_given_one_value(self):
         cell = board.SudokuCell(potential_values=7)
 
         assert cell.value == 7
         assert cell.potential_values == frozenset((7, ))
-        assert cell.solved
 
     @pytest.mark.parametrize('value', INVALID_CELL_VALUES)
     def test_create_cell_invalid(self, value):
@@ -126,16 +123,6 @@ class TestSudokuCellMethods:
         cell = board.SudokuCell(potential_values=potential_values)
         assert repr(cell) == representation
 
-    def test_not_solved(self):
-        cell = board.SudokuCell(potential_values=(7, 8, 9))
-
-        assert not cell.solved
-
-    def test_solved(self):
-        cell = board.SudokuCell(potential_values=(7, ))
-
-        assert cell.solved
-
     def test_get_value_not_yet_solved(self):
         cell = board.SudokuCell(potential_values=(3, 5, 7))
 
@@ -153,7 +140,6 @@ class TestSudokuCellMethods:
         cell.value = 8
 
         assert cell.value == 8
-        assert cell.solved
         assert cell.potential_values == frozenset((8, ))
 
     @pytest.mark.parametrize('value', (v for v in INVALID_CELL_VALUES if isinstance(v, int)))
