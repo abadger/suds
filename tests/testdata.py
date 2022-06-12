@@ -45,7 +45,7 @@ BAD_DATA = {
 
 BAD_DATA_JSON = json.dumps(BAD_DATA)
 
-BLANK_BOARD_DATA: t.List[t.List[t.Optional[int]]] = [[None] * 9 for _c in range(0, 9)]
+BLANK_BOARD_DATA: t.List[t.List[int]] = [[0] * 9 for _c in range(0, 9)]
 
 # The following are all "rotations" of each other
 ONE_EACH_BOARD_ROWS_DATA = copy.deepcopy(BLANK_BOARD_DATA)
