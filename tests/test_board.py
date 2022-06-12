@@ -1,3 +1,4 @@
+import copy
 import itertools
 import re
 from collections.abc import Iterable
@@ -204,10 +205,10 @@ class TestSudokuBoardInit:
         assert new_board._store == initial_board._store
 
     def test_create_from_list_of_rows(self):
-        new_board = board.SudokuBoard.from_list_of_rows(testdata.GOOD_DATA['board']['rows'])
+        new_board = board.SudokuBoard.from_list_of_rows(testdata.EASY_DATA['board']['rows'])
 
         internal_representation = []
-        for row in testdata.GOOD_DATA['board']['rows']:
+        for row in testdata.EASY_DATA['board']['rows']:
             internal_representation.append(tuple(c or None for c in row))
 
         assert new_board.rows == input_format_to_view_format(internal_representation)
@@ -261,3 +262,66 @@ class TestSudokuBoardUpdate:
                 match=re.escape('The update would violate the known constraints of cell (0, 1):'
                                 ' Attempt to set cell to a value that has been eliminated.')):
             sboard.update({(0, 1): 3})
+
+
+class TestSudokuBoardEq:
+    GOOD_DATA_ONE_CHANGE = copy.deepcopy(testdata.EASY_DATA['board']['rows'])
+    GOOD_DATA_ONE_CHANGE[0][0] = 9
+
+    @pytest.mark.parametrize('board_data', (
+        testdata.ONE_EACH_BOARD_ROWS_DATA,
+        testdata.EASY_DATA['board']['rows'],
+    ))
+    def test_equal(self, board_data):
+        primary = board.SudokuBoard.from_list_of_rows(board_data)
+        other = board.SudokuBoard.from_list_of_rows(board_data)
+
+        assert primary == other
+
+    def test_default_board_equal(self):
+        primary = board.SudokuBoard()
+        other = board.SudokuBoard()
+
+        assert primary == other
+
+    @pytest.mark.parametrize('board_data, other_board_data', (
+        (
+            testdata.ONE_EACH_BOARD_ROWS_DATA,
+            testdata.EASY_DATA['board']['rows'],
+        ),
+        (testdata.EASY_DATA['board']['rows'], GOOD_DATA_ONE_CHANGE),
+    ))
+    def test_unequal(self, board_data, other_board_data):
+        primary = board.SudokuBoard.from_list_of_rows(board_data)
+        other = board.SudokuBoard.from_list_of_rows(other_board_data)
+
+        assert primary != other
+
+
+class TestSudokuBoardSolved:
+
+    def test_solved(self):
+        test_board = board.SudokuBoard.from_list_of_rows(testdata.EASY_DATA_SOLVED)
+
+        assert test_board.solved
+
+    @pytest.mark.parametrize('board_data', (
+        testdata.ONE_EACH_BOARD_ROWS_DATA,
+        testdata.EASY_DATA['board']['rows'],
+    ))
+    def test_unsolved(self, board_data):
+        test_board = board.SudokuBoard.from_list_of_rows(board_data)
+
+        assert not test_board.solved
+
+
+class TestSudokuBoardStr:
+
+    @pytest.mark.parametrize('board_data, output', (
+        (testdata.EASY_DATA_SOLVED, testdata.EASY_DATA_SOLVED_OUTPUT),
+        (testdata.EASY_DATA['board']['rows'], testdata.EASY_DATA_OUTPUT),
+    ))
+    def test_str_output(self, board_data, output):
+        test_board = board.SudokuBoard.from_list_of_rows(board_data)
+
+        assert test_board.format() == output

@@ -117,6 +117,12 @@ class SudokuBoard:
             for _count in range(0, self.num_rows):
                 self._store.append([SudokuCell() for _dummy in range(0, self.num_columns)])
 
+    def __eq__(self, other):
+        """Return True when all of the SudokuCells are equal in both this and other."""
+        if self.rows == other.rows:
+            return True
+        return False
+
     @classmethod
     def from_list_of_rows(cls, rows: Sequence[Sequence[int]]) -> 'SudokuBoard':
         """
@@ -152,6 +158,14 @@ class SudokuBoard:
         new_board.update(initial_data)
 
         return new_board
+
+    @property
+    def solved(self):
+        """True when the SudokuBoard has been completely filled in."""
+        for row in self.rows:
+            if not all(elem.value for elem in row):
+                return False
+        return True
 
     @property
     def rows(self):
@@ -212,3 +226,15 @@ class SudokuBoard:
         if not self.valid():
             self._store = old_store
             raise InvalidBoardPosition('The updates would make an invalid Sudoku')
+
+    def format(self):
+        """Format the board's state for human viewing."""
+        output = []
+        for row in self.rows:
+            row_output = []
+            for cell in row:
+                row_output.append(str(cell.value) if cell.value else ' ')
+
+            output.append(' '.join(row_output))
+
+        return '\n'.join(output)

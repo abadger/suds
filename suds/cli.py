@@ -9,6 +9,7 @@ import typing as t
 
 from .board import SudokuBoard
 from .savefile import load_save_file
+from .strategy import load_strategies
 
 
 def parse_args(args: t.Sequence[str]) -> argparse.Namespace:
@@ -32,9 +33,22 @@ def main() -> int:
     save_data = load_save_file(args.filename)
 
     board: SudokuBoard = SudokuBoard.from_list_of_rows(save_data.board.rows)
-    print(board.rows)
-    # board.update({(0, 0): 1, (0, 1): 2})
-    # print(board.rows)
-    # board.update({(0, 2): 2})
-    # print(board.rows)
-    return 0
+    strategies = load_strategies()
+
+    while not board.solved:
+        old_board = SudokuBoard(board)
+
+        for strategy in strategies:
+            strategy.process_board(board)
+
+        if old_board == board:
+            break
+    else:
+        # Success
+        print('The soultion is:\n')
+        print(board.format())
+        return 0
+
+    print('I was not smart enough to solve this sudoku\n')
+    print(board.format())
+    return 1
