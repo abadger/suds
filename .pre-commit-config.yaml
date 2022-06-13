@@ -48,6 +48,7 @@ repos:
       - id: pytype
         additional_dependencies:
           - pydantic
+          - straight.plugin
           - pytest
         args:
           - suds
@@ -102,6 +103,7 @@ repos:
           - mccabe
           - pylint-mccabe
           - pydantic
+          - straight.plugin
         args:
           - "--load-plugins=pylint.extensions.mccabe"
           - "--ignore-patterns=test_.*\\.py,conftest.py"
