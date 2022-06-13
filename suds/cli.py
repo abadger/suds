@@ -45,7 +45,7 @@ def main() -> int:
             break
     else:
         # Success
-        print('The soultion is:\n')
+        print('The solution is:\n')
         print(board.format())
         return 0
 
