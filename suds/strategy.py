@@ -4,8 +4,10 @@
 # See the LICENSE file for more details
 """Strategies for finding more Sudoku values."""
 import abc
+import sys
 import typing as t
-from collections import defaultdict
+
+from straight.plugin import load
 
 # These are all identifiers which are only used for type checking.  Frequently, they have to be
 # used as strings otherwise python will fail when they are referenced in an annotation so disable
@@ -15,7 +17,7 @@ if t.TYPE_CHECKING:  # pragma: nocover
     from .board import SudokuBoard
 
 
-# Strateies are classes because they may have to save state.  However, most strategies are very
+# Strategies are classes because they may have to save state.  However, most strategies are very
 # simple so there is usually only one method.
 # pylint: disable=too-few-public-methods
 @t.runtime_checkable
@@ -38,113 +40,19 @@ class Strategy(t.Protocol, metaclass=abc.ABCMeta):
         """
 
 
-class NumberInUnit(Strategy):
-    """Filters values that are already present in one unit of a SudokuBoard."""
-
-    board_unit: str
-    """
-    Name of a SudokuBoard view attribute.
-
-    This should be replaced with a simple class variable returning a simple string name for
-    a SudokuBoard view attribute.
-
-    For instance, for the strategy that filters numbers that are already present in
-    a SudokuBoard's rows, do this::
-
-        class NumberInRow(NumberInUnit):
-            board_unit = 'rows'
-    """
-
-    @classmethod
-    def process_board(cls, board: 'SudokuBoard'):
-        """Filter values that are already present in one unit of a SudokuBoard."""
-        for unit in getattr(board, cls.board_unit):
-            unit_contents = [cell.value for cell in unit if cell.value]
-
-            if not unit_contents:
-                continue
-
-            for cell in unit:
-                if not cell.value:
-                    cell -= unit_contents
-
-
-class NumberInRow(NumberInUnit):
-    """Filter numbers that are already present in the row of the SudokuBoard."""
-
-    board_unit = 'rows'
-
-
-class NumberInColumn(NumberInUnit):
-    """Filter numbers that are already present in the column of the SudokuBoard."""
-
-    board_unit = 'columns'
-
-
-class NumberInBox(NumberInUnit):
-    """Filter numbers that are already present in the box of the SudokuBoard."""
-
-    board_unit = 'boxes'
-
-
-class OnlyInUnit(Strategy):
-    """Set numbers that are only allowed in one cell of a unit."""
-
-    board_unit: str
-    """
-    Name of a SudokuBoard view attribute.
-
-    This should be replaced with a simple class variable returning a simple string name for
-    a SudokuBoard view attribute.
-
-    For instance, for the strategy that filters numbers that are already present in
-    a SudokuBoard's rows, do this::
-
-        class OnlyInRow(OnlyInUnit):
-            board_unit = 'rows'
-    """
-
-    @classmethod
-    def process_board(cls, board: 'SudokuBoard'):
-        """Sets values that can only occur in one cell of a unit."""
-        for unit in getattr(board, cls.board_unit):
-            potentials = defaultdict(list)
-            for cell in unit:
-                for potential in cell.potential_values:
-                    potentials[potential].append(cell)
-
-            for potential, cells_allowed in potentials.items():
-                if len(cells_allowed) == 1:
-                    cells_allowed[0].value = potential
-
-
-class OnlyInRow(OnlyInUnit):
-    """Set numbers that are only allowed in one cell of a row."""
-
-    board_unit = 'rows'
-
-
-class OnlyInColumn(OnlyInUnit):
-    """Set numbers that are only allowed in one cell of a column."""
-
-    board_unit = 'columns'
-
-
-class OnlyInBox(OnlyInUnit):
-    """Set numbers that are only allowed in one cell of a box."""
-
-    board_unit = 'boxes'
-
-
-def load_strategies() -> tuple[Strategy, ...]:
+def load_strategies() -> list[Strategy]:
     """Load and return strategies."""
-    # Note: In the future, strategies will be plugin based.  This function will then hold the logic
-    # to find and load all the strategies.
-    return (
-        NumberInBox(),
-        NumberInColumn(),
-        NumberInRow(),
-        OnlyInRow(),
-        OnlyInColumn(),
-        OnlyInBox(),
-    )
+
+    plugins = load('suds.strategy_plugins', subclasses=Strategy)
+
+    only_good_plugins = []
+    for plugin in plugins:
+        try:
+            only_good_plugins.append(plugin())
+        except Exception as e:  # pylint: disable=broad-except
+            # Any error instantiating the plugin is recoverable.  But we need to log that the
+            # exception happened.
+            # FIXME: Replace sys.stderr with actual logging
+            sys.stderr.write(f'Error loading {plugin.__name__}: {e}\n')
+
+    return only_good_plugins

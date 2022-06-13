@@ -5,3 +5,5 @@ python.install_sources(
   pure: true,
   subdir: 'suds',
 )
+
+subdir('strategy_plugins')
