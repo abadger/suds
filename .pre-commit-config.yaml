@@ -74,7 +74,7 @@ repos:
     hooks:
       - id: rst-linter
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.26.3
+    rev: v1.27.1
     hooks:
       - id: yamllint
   - repo: https://github.com/frnmst/md-toc
@@ -96,7 +96,7 @@ repos:
         args:
           - "-x=tests"
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.14.3
+    rev: v2.14.4
     hooks:
       - id: pylint
         additional_dependencies:
@@ -109,7 +109,7 @@ repos:
           - "--ignore-patterns=test_.*\\.py,conftest.py"
           - "--disable=fixme"
   - repo: https://github.com/jendrikseipp/vulture
-    rev: "v2.4"
+    rev: "v2.5"
     hooks:
       - id: vulture
         args:
@@ -137,16 +137,16 @@ repos:
     hooks:
       - id: tox-ini-fmt
   - repo: https://github.com/jackdewinter/pymarkdown
-    rev: v0.9.5
+    rev: v0.9.7
     hooks:
       - id: pymarkdown
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.34.0
+    rev: v2.37.1
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.1.0
+    rev: v3.8.1
     hooks:
       - id: reorder-python-imports
         args: [--py37-plus]
