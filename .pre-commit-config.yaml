@@ -66,7 +66,7 @@ repos:
       - id: rst-inline-touching-normal
       - id: text-unicode-replacement-char
   - repo: https://github.com/asottile/yesqa
-    rev: v1.3.0
+    rev: v1.4.0
     hooks:
       - id: yesqa
   - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
@@ -86,7 +86,7 @@ repos:
     hooks:
       - id: gitlint
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 5.0.4
     hooks:
       - id: flake8
   - repo: https://github.com/PyCQA/bandit
@@ -96,7 +96,7 @@ repos:
         args:
           - "-x=tests"
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.14.4
+    rev: v2.15.0
     hooks:
       - id: pylint
         additional_dependencies:
@@ -125,11 +125,11 @@ repos:
           - "--ignore=D212,D203,D202"
           - "--match='(?!test_).*\\.py"
   - repo: https://github.com/PyCQA/doc8
-    rev: 0.11.2
+    rev: v1.0.0
     hooks:
       - id: doc8
   - repo: https://github.com/myint/rstcheck
-    rev: v6.0.0.post1
+    rev: v6.1.0
     hooks:
       - id: rstcheck
   - repo: https://github.com/tox-dev/tox-ini-fmt
@@ -141,12 +141,12 @@ repos:
     hooks:
       - id: pymarkdown
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.1
+    rev: v2.37.3
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.8.1
+    rev: v3.8.2
     hooks:
       - id: reorder-python-imports
         args: [--py37-plus]
