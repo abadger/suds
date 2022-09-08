@@ -19,7 +19,7 @@ def parse_args(args: t.Sequence[str]) -> argparse.Namespace:
     :arg args: The argument list.
 
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="suds", description="A Simple Sudoku Solver")
     parser.add_argument('filename', help='The filename containing the json encoded sudoku board')
 
     args: argparse.Namespace = parser.parse_args(args)
