@@ -1,8 +1,8 @@
 import pytest
 
-from .. import testdata
+from ... import testdata
 from suds.board import SudokuCell
-from suds.strategy_plugins import number_in
+from suds.plugins.strategy import number_in
 
 
 @pytest.mark.sudoku_data(testdata.EASY_DATA['board']['rows'])
