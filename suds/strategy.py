@@ -43,7 +43,7 @@ class Strategy(t.Protocol, metaclass=abc.ABCMeta):
 def load_strategies() -> list[Strategy]:
     """Load and return strategies."""
 
-    plugins = load('suds.strategy_plugins', subclasses=Strategy)
+    plugins = load('suds.plugins.strategy', subclasses=Strategy)
 
     only_good_plugins = []
     for plugin in plugins:

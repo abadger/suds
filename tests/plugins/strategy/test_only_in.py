@@ -2,9 +2,9 @@ import copy
 
 import pytest
 
-from .. import testdata
+from ... import testdata
 from suds.board import SudokuCell
-from suds.strategy_plugins import only_in
+from suds.plugins.strategy import only_in
 
 
 @pytest.mark.sudoku_data(testdata.BLANK_BOARD_DATA)

@@ -2,26 +2,24 @@
 # Copyright: (C) 2022  Toshio Kuratomi
 # License: AGPL-3.0-or-later
 # See the LICENSE file for more details
-"""Strategies to set the value if is the only possible cell in the Row/Column/Box to have that."""
-import abc
+"""Strategies that filter values that are already present in the Row/Column/Box."""
 import typing as t
-from collections import defaultdict
 
-from ..strategy import Strategy
+from ...strategy import Strategy
 
 # These are all identifiers which are only used for type checking.  Frequently, they have to be
 # used as strings otherwise python will fail when they are referenced in an annotation so disable
 # the pylint check for them.
 if t.TYPE_CHECKING:  # pragma: nocover
     # pylint: disable=unused-import
-    from ..board import SudokuBoard
+    from ...board import SudokuBoard
 
 
 # Strategies are classes because they may have to save state.  However, most strategies are very
 # simple so there is usually only one method.
 # pylint: disable=too-few-public-methods
-class OnlyInUnit(Strategy, metaclass=abc.ABCMeta):
-    """Set numbers that are only allowed in one cell of a unit."""
+class NumberInUnit(Strategy):
+    """Filters values that are already present in one unit of a SudokuBoard."""
 
     board_unit: str
     """
@@ -33,7 +31,7 @@ class OnlyInUnit(Strategy, metaclass=abc.ABCMeta):
     For instance, for the strategy that filters numbers that are already present in
     a SudokuBoard's rows, do this::
 
-        class OnlyInRow(OnlyInUnit):
+        class NumberInRow(NumberInUnit):
             board_unit = 'rows'
     """
 
@@ -45,31 +43,31 @@ class OnlyInUnit(Strategy, metaclass=abc.ABCMeta):
 
     @classmethod
     def process_board(cls, board: 'SudokuBoard'):
-        """Set values that can only occur in one cell of a unit."""
+        """Filter values that are already present in one unit of a SudokuBoard."""
         for unit in getattr(board, cls.board_unit):
-            potentials = defaultdict(list)
+            unit_contents = [cell.value for cell in unit if cell.value]
+
+            if not unit_contents:
+                continue
+
             for cell in unit:
-                for potential in cell.potential_values:
-                    potentials[potential].append(cell)
-
-            for potential, cells_allowed in potentials.items():
-                if len(cells_allowed) == 1:
-                    cells_allowed[0].value = potential
+                if not cell.value:
+                    cell -= unit_contents
 
 
-class OnlyInRow(OnlyInUnit):
-    """Set numbers that are only allowed in one cell of a row."""
+class NumberInRow(NumberInUnit):
+    """Filter numbers that are already present in the row of the SudokuBoard."""
 
     board_unit = 'rows'
 
 
-class OnlyInColumn(OnlyInUnit):
-    """Set numbers that are only allowed in one cell of a column."""
+class NumberInColumn(NumberInUnit):
+    """Filter numbers that are already present in the column of the SudokuBoard."""
 
     board_unit = 'columns'
 
 
-class OnlyInBox(OnlyInUnit):
-    """Set numbers that are only allowed in one cell of a box."""
+class NumberInBox(NumberInUnit):
+    """Filter numbers that are already present in the box of the SudokuBoard."""
 
     board_unit = 'boxes'
