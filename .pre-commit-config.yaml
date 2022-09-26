@@ -96,7 +96,7 @@ repos:
         args:
           - "-x=tests"
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.15.2
+    rev: v2.15.3
     hooks:
       - id: pylint
         additional_dependencies:
@@ -109,7 +109,7 @@ repos:
           - "--ignore-patterns=test_.*\\.py,conftest.py"
           - "--disable=fixme"
   - repo: https://github.com/jendrikseipp/vulture
-    rev: "v2.5"
+    rev: "v2.6"
     hooks:
       - id: vulture
         args:
@@ -128,7 +128,7 @@ repos:
     rev: v1.0.0
     hooks:
       - id: doc8
-  - repo: https://github.com/myint/rstcheck
+  - repo: https://github.com/rstcheck/rstcheck
     rev: v6.1.0
     hooks:
       - id: rstcheck
@@ -137,16 +137,16 @@ repos:
     hooks:
       - id: tox-ini-fmt
   - repo: https://github.com/jackdewinter/pymarkdown
-    rev: v0.9.7
+    rev: v0.9.8
     hooks:
       - id: pymarkdown
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.3
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.8.2
+    rev: v3.8.3
     hooks:
       - id: reorder-python-imports
         args: [--py37-plus]
