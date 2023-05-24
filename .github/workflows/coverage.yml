@@ -39,7 +39,7 @@ jobs:
                 python-${{ matrix.python.version }}-\
                 ${{ hashFiles('**/requirements/*.txt') }}"
 
-      - uses: actions/setup-python@v4.3.0
+      - uses: actions/setup-python@v4.6.1
         with:
           # Version range or exact version of a Python version to use, using
           # SemVer's version range syntax
